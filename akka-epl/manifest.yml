@@ -1,0 +1,6 @@
+---
+applications:
+- name: akka-react-cloudant
+  instances: 1
+  host: soccerapi
+  path: target/scala-2.12/akka-epl.jar

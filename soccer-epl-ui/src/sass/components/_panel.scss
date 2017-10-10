@@ -1,0 +1,39 @@
+.readmin-panel {
+  position: relative;
+  width: 100%;
+  background: $color-bg-white;
+  margin-bottom: $margin-large;
+  @include border-radius($border-radius);
+  @include an-box-shadow-small;
+
+  &.righticonmenu {
+    .panel-heading {
+      padding: $padding-5 $padding-large;
+      padding-right: $padding-base;
+    }
+  }
+
+  &.body-text-center {
+    .panel-body {
+      text-align: center;
+    }
+  }
+
+  .panel-heading {
+    position: relative;
+    width: 100%;
+    border-bottom: 1px solid darken($color-body-bg, 5%);
+    padding: $padding-base + 2 $padding-large;
+    padding-right: $padding-base;
+    @include flex-space-between;
+
+    h5 {
+      margin: 0;
+    }
+  }
+  .panel-body {
+    padding: $padding-medium;
+    width: 100%;
+    display: inline-block;
+  }
+}

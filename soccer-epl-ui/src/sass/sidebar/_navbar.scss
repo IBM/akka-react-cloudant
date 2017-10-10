@@ -1,0 +1,25 @@
+.nav-menu {
+  .childmenu {
+    + div {
+      padding: 0 !important;
+    }
+    .active {
+      .childmenu & {
+        background: $color-primary !important;
+        color: $font-color-white !important;
+      }
+      i {
+        color:  $font-color-white !important;
+      }
+    }
+  }
+
+  .active {
+    background: $color-primary !important;
+    color: $font-color-white !important;
+    i {
+      color: $font-color-white !important;
+    }
+  }
+
+}

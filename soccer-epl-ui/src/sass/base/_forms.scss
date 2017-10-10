@@ -1,0 +1,24 @@
+.readmin-form {
+  position: relative;
+  width: 100%;
+
+  &.inline {
+    @media (max-width: 560px) {
+      .inline-btn {
+        margin-top: $margin-medium;
+      }
+
+    }
+  }
+
+  input {
+    width: 100%;
+  }
+  label {
+    margin: 0 !important;
+  }
+
+  .align-items-center {
+
+  }
+}

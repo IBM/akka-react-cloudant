@@ -1,0 +1,20 @@
+.readmin-page-content {
+  position: relative;
+  width: 100%;
+  padding: $padding-large;
+  padding-top: $padding-large * 3 + 10;
+  @include transition();
+
+  @media (max-width: 520px) {
+    padding: $padding-base;
+    padding-top: $padding-large * 3 + 10;
+  }
+
+  &.menu-open {
+    padding-left: 256 + $padding-large;
+
+    @media (max-width: 991px) {
+      padding-left: $padding-large;
+    }
+  }
+}

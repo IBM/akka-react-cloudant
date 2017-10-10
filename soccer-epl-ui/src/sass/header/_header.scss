@@ -1,0 +1,72 @@
+.an-header {
+  position: fixed;
+  width: 100%;
+  left: 0;
+  top: 0;
+  background: $white;
+  padding: $padding-small $padding-medium;
+  z-index: 1300;
+  //border-bottom: 1px solid $color-primary;
+  @include flex-space-between();
+  justify-content: flex-end;
+  @include an-box-shadow();
+  height: 65px;
+
+  @media (max-width: 520px) {
+    z-index: 1400;
+  }
+
+  .brand {
+    position: relative;
+    color: $font-color-white;
+    font-size: $font-size-h4;
+    img {
+      width: 130px;
+    }
+  }
+
+  .header-right {
+    @include flex-center();
+    > a {
+      margin: 0 $margin-small 0 $margin-base;
+    }
+    button {
+      padding: 0 !important;
+    }
+  }
+
+  .header-left {
+    position: relative;
+    @include flex-center();
+    .brand {
+      margin-right: $margin-base * 4 + 10;
+    }
+
+  }
+
+}
+
+.menubtn {
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+  outline: 0;
+  button {
+  }
+  i {
+
+    @include transition();
+  }
+
+  &:hover {
+    i {
+      color: $color-primary;
+    }
+  }
+}
+
+
+
+.material-icons {
+  color: #757575;
+}
