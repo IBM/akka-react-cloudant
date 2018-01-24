@@ -1,4 +1,7 @@
 # Soccer Dashboard with Akka and ReactJS
+
+[![Build Status](https://travis-ci.org/IBM/akka-react-cloudant.svg?branch=master)](https://travis-ci.org/IBM/akka-react-cloudant)
+
 In this code pattern, we will create a Soccer Dashboard for English Premier League. The dashboard is created by web crawling the https://www.premierleague.com/ website. The back end utilizes Akka Actor, the front end is done with ReactJS and the data storage is using IBM Cloudant. And the code is deployed on Cloud Foundry.
 
 # Flow
