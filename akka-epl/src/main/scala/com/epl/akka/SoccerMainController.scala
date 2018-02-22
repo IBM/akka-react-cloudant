@@ -26,6 +26,7 @@ object SoccerMainController extends App with CorsSupport{
 
     val config = system.settings.config
 
+    // don't create Props inline, use a factory on the companion
     val cloudantReader =
       system.actorOf(Props[CloudantReaderWriter], "cloudantWriter")
 
@@ -34,6 +35,13 @@ object SoccerMainController extends App with CorsSupport{
     val route: Route =
       path("fixtures") {
         get {
+          // for a path producing the best practice way would be to have the
+          // reader actor return a typed object here, and then use the marshalling infrastructure
+          // to turn the json into bytes. This conflates the way you store data with the way you
+          // represent data to your client (even if at first they are the same)
+          // see docs here: https://doc.akka.io/docs/akka-http/current/common/json-support.html#json-support
+          // Doing this stringly typed may be fine for a home project app, but it is not good for a technology guide
+          // which inexperienced developers will use as a blueprint
           val fixtureJson:Future[String] = (cloudantReader ? GetDocument(DocumentType.Fixtures)).mapTo[String]
           complete(
             fixtureJson
@@ -61,6 +69,7 @@ object SoccerMainController extends App with CorsSupport{
                                              config.getString("http.host"),
                                              config.getInt("http.port"))
 
+    // isn't this sample for running on the IBM cloud, who is the user that will press return to stop there?
     println(
       s"Server online at ${config.getString("http.host")}: ${config.getString("http.port")}\nPress RETURN to stop...")
     StdIn.readLine() // let it run until user presses return

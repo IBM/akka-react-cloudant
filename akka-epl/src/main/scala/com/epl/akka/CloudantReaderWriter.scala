@@ -18,14 +18,18 @@ object CloudantReaderWriter {
 /**
   * Created by sanjeevghimire on 9/19/17.
   */
+// Each of the messages this actor accepts just trigger async work somewhere else, and there is
+// no state this actor is superflous and could easily be done with regular methods returning Futures
+// If you want to make it bring something to the table that could be for example keeping a cache of
+// the documents so that each request does not require a further HTTP request to cloudant, and then
+// have a periodic (with Timers) invalidation and or refresh of that cache.
 class CloudantReaderWriter extends Actor with ActorLogging{
 
   implicit val ec = context.dispatcher
 
   private val config = context.system.settings.config
 
-  // note that as each of these methods just trigger async work somewhere else, and there is
-  // no state this actor is superflous and could easily be done with regular methods returning Futures
+
   override def receive: Receive = {
     case SaveToCloudantDatabase(jsonString: String) =>
       // in general side effecting from a Future callback like this is bad practice
@@ -43,11 +47,18 @@ class CloudantReaderWriter extends Actor with ActorLogging{
     case GetDocument(documentType) =>
       val url: String = getUrl(documentType)
       val res = WebHttpClient.getWithHeader(url,config.getString("cloudant.username"),config.getString("cloudant.password"))
+      // using Strings/generic types as messages is an antipattern, you should define
+      // a response message for GetDocument and send that back. (And having the data as string is also
+      // questionable, as mentioned elsewhere)
       res pipeTo sender()
 
 
     case ExpireCurrentDocument() =>
       val url: String = config.getString("cloudant.get_unexpireddoc_url")
+      // as you just want to react on success ful query, a flatMap(unexpired => further-request)
+      // would be a more ideomatic way to use futures here than side-effecting in onComplete
+      // if this actor represents the connection to cloudant it may also make sense to make sure
+      // failures to talk to cloudant end up crashing the actor
       WebHttpClient.getWithHeader(url,config.getString("cloudant.username"),config.getString("cloudant.password")) onComplete {
         case Success(unexpiredDocumentJson) =>
           val jsValue: JsValue = Json.parse(unexpiredDocumentJson)

@@ -10,7 +10,7 @@ import play.api.libs.json.{JsValue, Json}
 
 import scala.util.{Failure, Success}
 
-
+// this is never used so better remove it
 object DBOperation{
   case class SaveToCloudantDatabase(jsValue: JsValue){}
 

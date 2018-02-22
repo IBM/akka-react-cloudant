@@ -27,6 +27,9 @@ import scala.concurrent.{ExecutionContext, Future, Promise}
   * In this case this returns the html output of the url
   * being crawled
   */
+// this object mixes concerns in that it is both a facade for the AsyncHttpClient and
+// PhantomJS at the same time, two client technologies that doesn't really have anything in common
+// separate those to two different places
 object WebHttpClient {
 
   // in general not a good idea to put state like this in a singleton, could be ok here, but what happens
@@ -35,6 +38,10 @@ object WebHttpClient {
   val PHANTOMJS_PAGE_CUSTOMHEADERS_PREFIX: String = "phantomjs.page.customHeaders."
   val PHANTOMJS_CLI_ARGS: String = "phantomjs.cli.args"
 
+  // a bit of shame that you can't just use the Akka HTTP client here given that you
+  // already have Akka HTTP as a dependency, was there some showstopper for that?
+  // if so it would make sense to add a comment here saying "We need X which isn't currently supported
+  // by Akka HTTP so therefore we use AsyncHttpClient instead"
   val config = new AsyncHttpClientConfig.Builder()
   val client = new AsyncHttpClient(config
     .setFollowRedirect(true)
