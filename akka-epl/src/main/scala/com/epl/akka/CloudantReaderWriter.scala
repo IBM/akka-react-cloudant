@@ -24,8 +24,15 @@ class CloudantReaderWriter extends Actor with ActorLogging{
 
   private val config = context.system.settings.config
 
+  // note that as each of these methods just trigger async work somewhere else, and there is
+  // no state this actor is superflous and could easily be done with regular methods returning Futures
   override def receive: Receive = {
     case SaveToCloudantDatabase(jsonString: String) =>
+      // in general side effecting from a Future callback like this is bad practice
+      // since it will execute on a thread that is not the actor, using `log` should be thread safe
+      // but it is not good to show in example code as it somewhat encourages doing the wrong thing(tm)
+      // if you want to react on the future completion in the actor you should use `pipeTo`
+      // see docs here: https://doc.akka.io/docs/akka/current/actors.html#ask-send-and-receive-future
       WebHttpClient.post(config.getString("cloudant.post_url"),jsonString,config.getString("cloudant.username"),config.getString("cloudant.password")) onComplete {
         case Success(body) =>
           log.info("Successfully Saved:: "+ body)

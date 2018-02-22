@@ -23,6 +23,8 @@ object HTMLParser {
 /**
   * Created by sanjeevghimire on 9/1/17.
   */
+// this name does not really encode what the actor does given that it fetches pages, parses content
+// and turns the result to JSON (the last is not a very good design, see comments below)
 class HTMLParser() extends Actor with ActorLogging{
 
   val EXPIRED_NO = "NO"
@@ -32,6 +34,9 @@ class HTMLParser() extends Actor with ActorLogging{
   import scala.collection.JavaConverters._
 
 
+  // in general it is good practice to move methods that require no context from the actor
+  // to the companion object (making them static) as that makes it clear that they are pure
+  // and also makes writing unit tests for them easier.
   def getValidLinks(content: String, url:String): Iterator[String] = {
     Jsoup.parse(content, url).select("a[href]").iterator().asScala.map(_.absUrl("href"))
   }
@@ -125,6 +130,13 @@ class HTMLParser() extends Actor with ActorLogging{
 
     val jsValue: JsValue = Json.toJson(resultsMap)
     val returnJson: JsObject = jsValue.as[JsObject] + ("expired" -> Json.toJson(EXPIRED_NO)) + ("documentType" -> Json.toJson(DocumentType.Results.toString))
+
+    // using strings (actually even the JSValue types) for internal communication inside
+    // of the app is in general bad practice, sometimes referred to as "stringly typed" programming,
+    // and is not good to use as an example for newcomers.
+    // A proper design would parse data into a specific type here, and then turn that
+    // into json encoded as a string in the CloudAntReaderWriter which knows what format it
+    // needs to save things in.
     Json.stringify(returnJson)
   }
 
@@ -140,6 +152,10 @@ class HTMLParser() extends Actor with ActorLogging{
             //.filter(link => link.endsWith("fixtures") || link.endsWith("tables") || link.endsWith("results"))
             .filter(link => link.endsWith("fixtures"))
             .foreach(context.parent ! CrawlRequest(_,false))
+
+        // rethrow instead and put the decision to stop in the supervision of the parent
+        // which would make it possible to recover from failure by starting a new actor etc.
+        // this will instead permanently break the app until the entire app is restarted
         case Failure(err) =>
           log.error(err, "Error while crawling url: "+ url)
           stop()
@@ -150,6 +166,10 @@ class HTMLParser() extends Actor with ActorLogging{
       val isFixtures = url.endsWith("fixtures")
       val isTables = url.endsWith("tables")
       val isResults = url.endsWith("results")
+      // this is a blocking call, which means it should be run on a separate threadpool
+      // or it may starve the actor system meaning that other actors do not get to execute
+      // read this section of the docs:
+      // https://doc.akka.io/docs/akka/current/dispatchers.html#problem-blocking-on-default-dispatcher
       val body: String = WebHttpClient.getUsingPhantom(url)
       var jsonString: String = null
       if(isFixtures) {
@@ -160,6 +180,14 @@ class HTMLParser() extends Actor with ActorLogging{
         jsonString = getResultsAndConvertToJson(body,url)
       }
       log.info("HTML to JSON: "+jsonString)
+
+      // this mixes conserns, why does the HTMLParser actor know that something should be saved to cloudant
+      // it should instead be a result of the requested work, it should instead be a response to the command
+      // and it should be sent to the sender(), using the parent makes it much harder than necessary to test
+      // case CrawlAndPrepare =>
+      //   ...
+      //   sender() ! PreparedResult(data)
+
       context.parent ! SaveJsonToCloudant(jsonString)
 
     case _: Status.Failure => stop()
