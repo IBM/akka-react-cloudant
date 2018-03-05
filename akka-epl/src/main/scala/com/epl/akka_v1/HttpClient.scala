@@ -15,6 +15,7 @@ object HttpClient {
 
   final val system = ActorSystem.create()
   final val config = system.settings.config
+  implicit val ec = system.dispatcher
 
   private val authorization = headers.Authorization(BasicHttpCredentials(config.getString("cloudant.username"), config.getString("cloudant.password")))
 
