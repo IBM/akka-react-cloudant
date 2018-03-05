@@ -13,7 +13,7 @@ import scala.concurrent.Future
 
 object HttpClient {
 
-  final val system = ActorSystem.create()
+  implicit val system = ActorSystem()
   final val config = system.settings.config
   implicit val ec = system.dispatcher
 
