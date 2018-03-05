@@ -6,6 +6,7 @@ import akka.http.scaladsl.marshalling.Marshal
 import akka.http.scaladsl.model.headers.BasicHttpCredentials
 import akka.http.scaladsl.model.{HttpMethods, HttpRequest, RequestEntity, headers}
 import akka.http.scaladsl.unmarshalling.Unmarshal
+import akka.stream.ActorMaterializer
 import akka.util.ByteString
 import com.epl.akka.DocumentType
 
@@ -14,8 +15,10 @@ import scala.concurrent.Future
 object HttpClient {
 
   implicit val system = ActorSystem()
-  final val config = system.settings.config
+  implicit val materializer = ActorMaterializer()
   implicit val ec = system.dispatcher
+
+  final val config = system.settings.config
 
   private val authorization = headers.Authorization(BasicHttpCredentials(config.getString("cloudant.username"), config.getString("cloudant.password")))
 
