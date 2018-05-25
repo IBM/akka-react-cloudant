@@ -14,6 +14,10 @@ object URLValidator {
 /**
   * Created by sanjeevghimire on 9/1/17.
   */
+
+// Making this an actor doesn't really make sense, it introduces an async boundary from the parent
+// actor but there is no gain (neither more resilient nor more performant) than just keeping this state
+// directly in WebCrawler
 class URLValidator extends Actor with ActorLogging{
   var visitedUrl = Set.empty[String]
   var childUrls = Set.empty[ActorRef]

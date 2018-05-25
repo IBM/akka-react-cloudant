@@ -9,6 +9,7 @@ import com.epl.akka.WebCrawler._
 
 object WebCrawler {
   case class CrawlRequest(url: String, isRootUrl: Boolean) {}
+  // Not used
   case class CrawlResponse(links: Set[String]) {}
   case class Crawl(url: String,isRootUrl: Boolean){}
   case class SaveJsonToCloudant(jsonString: String){}
@@ -21,6 +22,7 @@ object WebCrawler {
   */
 class WebCrawler extends Actor with ActorLogging{
 
+  // create a props factory for the actor companions  instead of an adhoc Props call here
   val urlValidator = context.actorOf(Props[URLValidator](new URLValidator()))
   val htmlParser = context.actorOf(Props[HTMLParser](new HTMLParser()))
   val cloudantWriter = context.actorOf(Props[CloudantReaderWriter](new CloudantReaderWriter()))
