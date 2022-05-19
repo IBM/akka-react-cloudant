@@ -27,11 +27,21 @@ import scala.concurrent.{ExecutionContext, Future, Promise}
   * In this case this returns the html output of the url
   * being crawled
   */
+// this object mixes concerns in that it is both a facade for the AsyncHttpClient and
+// PhantomJS at the same time, two client technologies that doesn't really have anything in common
+// separate those to two different places
 object WebHttpClient {
 
+  // in general not a good idea to put state like this in a singleton, could be ok here, but what happens
+  // if the async http client crashes - no way to restart it as it is effectively a constant per JVM
+  // (that would be a great use case for using an actor)
   val PHANTOMJS_PAGE_CUSTOMHEADERS_PREFIX: String = "phantomjs.page.customHeaders."
   val PHANTOMJS_CLI_ARGS: String = "phantomjs.cli.args"
 
+  // a bit of shame that you can't just use the Akka HTTP client here given that you
+  // already have Akka HTTP as a dependency, was there some showstopper for that?
+  // if so it would make sense to add a comment here saying "We need X which isn't currently supported
+  // by Akka HTTP so therefore we use AsyncHttpClient instead"
   val config = new AsyncHttpClientConfig.Builder()
   val client = new AsyncHttpClient(config
     .setFollowRedirect(true)
@@ -40,11 +50,15 @@ object WebHttpClient {
 
   val USER_AGENT: String= "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36"
   System.setProperty("phantomjs.page.settings.userAgent", USER_AGENT)
+
+  // if this was instead
   var driver: WebDriver = null
 
 
   import scala.concurrent.duration._
 
+  // here you create a separate actor system and materializer that starts thread pools/uses resources but
+  // is not really used
   implicit val system: ActorSystem = ActorSystem()
   implicit val materializer: Materializer = ActorMaterializer()
 
@@ -90,7 +104,7 @@ object WebHttpClient {
     promise.future
   }
 
-
+// remove stuff rather than keep them commented out in a published tutorial sample
 //  def getUsingAkkaHttp(url: String)(implicit system: ActorSystem, mat: Materializer): Future[String] = {
 //    implicit val executionContext = system.dispatcher
 //
@@ -152,6 +166,8 @@ object WebHttpClient {
 
 
 
+  // another great reason to put this inside an actor, actors have explicit lifecycle,
+  // and concurrency is handled for you. What happens here if multiple threads calls this at the same time?
   def initPhantomJS(){
     val desiredCaps: DesiredCapabilities = DesiredCapabilities.phantomjs()
     desiredCaps.setJavascriptEnabled(true)
@@ -165,7 +181,8 @@ object WebHttpClient {
     driver = new PhantomJSDriver(desiredCaps);
   }
 
-
+  // and here as well, this is not thread safe, this will not work given that you call it from
+  // future callbacks in the rest of hte code
   def getUsingPhantom(url: String): String = {
     initPhantomJS()
     driver.get(url)
