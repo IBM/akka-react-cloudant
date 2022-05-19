@@ -4,59 +4,59 @@
 # sbt specific
 .cache
 .history
-*/.lib/
-*/dist/*
-*/target/
-*/project/target/*
-*/lib_managed/
-*/src_managed/
-*/project/boot/
-*/project/plugins/project/
+**/.lib/
+**/dist/*
+**/target/
+**/project/target/*
+**/lib_managed/
+**/src_managed/
+**/project/boot/
+**/project/plugins/project/
 
 # Scala-IDE specific
-*/.scala_dependencies
-*/.worksheet
+**/.scala_dependencies
+**/.worksheet
 akka-epl/.idea/
 
 */.idea/
 
 # ENSIME specific
-*/.ensime_cache/
-*/.ensime
-*/ensime.sbt
+**/.ensime_cache/
+**/.ensime
+**/ensime.sbt
 
 
 # react 
 .DS_STORE
-*/node_modules
+**/node_modules
 *~
 *.pyc
 .grunt
-*/_SpecRunner.html
-*/__benchmarks__
-*/build/
-*//remote-repo/
-*/coverage/
-*/.module-cache
-*/*.gem
-*/docs/.bundle
-*/docs/code
-*/docs/_site
-*/docs/.sass-cache
-*/docs/js/*
-*/docs/downloads/*.zip
-*/docs/vendor/bundle
-*/fixtures/dom/public/react-dom.js
-*/fixtures/dom/public/react.js
-*/test/the-files-to-test.generated.js
-*/*.log*
-*/chrome-user-data
-*/*.sublime-project
-*/*.sublime-workspace
-*/.idea
-*/*.iml
+**/_SpecRunner.html
+**/__benchmarks__
+**/build/
+**//remote-repo/
+**/coverage/
+**/.module-cache
+**/*.gem
+**/docs/.bundle
+**/docs/code
+**/docs/_site
+**/docs/.sass-cache
+**/docs/js/*
+**/docs/downloads/*.zip
+**/docs/vendor/bundle
+**/fixtures/dom/public/react-dom.js
+**/fixtures/dom/public/react.js
+**/test/the-files-to-test.generated.js
+**/*.log*
+**/chrome-user-data
+**/*.sublime-project
+**/*.sublime-workspace
+**/.idea
+**/*.iml
 v.vscode
-*/*.swp
-*/*.swo
-*/*react*min*.js
-*/!src/node_modules
+**/*.swp
+**/*.swo
+**/*react*min*.js
+**/!src/node_modules
